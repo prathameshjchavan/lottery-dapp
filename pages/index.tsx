@@ -1,13 +1,14 @@
+import Header from "@/components/Header";
 import Head from "next/head";
 
 export default function Home() {
 	return (
-		<div>
+		<div className="bg-[#091B18] min-h-screen flex flex-col">
 			<Head>
 				<title>Lottery App</title>
 			</Head>
 			<main>
-				<h1>Let's build an awesome Lottery WEB3 Dapp!</h1>
+				<Header />
 			</main>
 		</div>
 	);
