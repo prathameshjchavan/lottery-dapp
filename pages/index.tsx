@@ -1,9 +1,11 @@
 import Header from "@/components/Header";
 import Login from "@/components/Login";
-import { useAddress, useContract } from "@thirdweb-dev/react";
+import { useAddress, useContract, useContractRead } from "@thirdweb-dev/react";
 import Head from "next/head";
 import Loading from "@/components/Loading";
-import { useState } from "react";
+import { useState, Fragment } from "react";
+import { ethers } from "ethers";
+import { currency } from "@/constants";
 
 export default function Home() {
 	const address = useAddress();
@@ -11,6 +13,20 @@ export default function Home() {
 	const { contract, isLoading } = useContract(
 		process.env.NEXT_PUBLIC_LOTTERY_CONTRACT_ADDRESSS
 	);
+	const { data: remainingTickets } = useContractRead(
+		contract,
+		"RemainingTickets"
+	);
+	const { data: currentWinningReward } = useContractRead(
+		contract,
+		"CurrentWinningReward"
+	);
+	const { data: ticketPrice } = useContractRead(contract, "ticketPrice");
+	const { data: ticketCommission } = useContractRead(
+		contract,
+		"ticketCommission"
+	);
+	const { data: expiration } = useContractRead(contract, "expiration");
 
 	if (!address) return <Login />;
 
@@ -33,22 +49,38 @@ export default function Home() {
 						<div className="flex justify-between p-2 space-x-2">
 							<div className="stats">
 								<h2 className="text-sm">Total Pool</h2>
-								<p className="text-xl">0.1 MATIC</p>
+								<p className="text-xl">
+									{currentWinningReward && (
+										<Fragment>
+											{ethers.utils.formatEther(
+												currentWinningReward.toString()
+											)}{" "}
+											{currency}
+										</Fragment>
+									)}
+								</p>
 							</div>
 							<div className="stats">
 								<h2 className="text-sm">Tickets Remaining</h2>
-								<p className="text-xl">100</p>
+								<p className="text-xl">{remainingTickets?.toNumber()}</p>
 							</div>
 						</div>
 
 						{/* Countdown timer */}
 					</div>
 
-					<div className="stats-container space-y-2">
+					<div className="stats-container">
 						<div className="stats-container">
 							<div className="flex justify-between items-center text-white pb-2">
 								<h2>Price per ticket</h2>
-								<p>0.01 MATIC</p>
+								<p>
+									{ticketPrice && (
+										<Fragment>
+											{ethers.utils.formatEther(ticketPrice.toString())}{" "}
+											{currency}
+										</Fragment>
+									)}
+								</p>
 							</div>
 
 							<div className="flex text-white items-center space-x-2 bg-[#091B18] border-[#004337] border p-4">
@@ -66,12 +98,28 @@ export default function Home() {
 							<div className="space-y-2 mt-5">
 								<div className="flex items-center justify-between text-emerald-300 text-sm italic font-extrabold">
 									<p>Total cost of tickets</p>
-									<p>0.999</p>
+									<p>
+										{ticketPrice && (
+											<Fragment>
+												{Number(
+													ethers.utils.formatEther(ticketPrice.toString())
+												) * quantity}{" "}
+												{currency}
+											</Fragment>
+										)}
+									</p>
 								</div>
 
 								<div className="flex items-center justify-between text-emerald-300 text-xs italic">
 									<p>Service fees</p>
-									<p>0.001 MATIC</p>
+									<p>
+										{ticketCommission && (
+											<Fragment>
+												{ethers.utils.formatEther(ticketCommission.toString())}{" "}
+												{currency}
+											</Fragment>
+										)}
+									</p>
 								</div>
 
 								<div className="flex items-center justify-between text-emerald-300 text-xs italic">
@@ -80,7 +128,13 @@ export default function Home() {
 								</div>
 							</div>
 
-							<button className="mt-5 w-full bg-gradient-to-br from-orange-500 to-emerald-600 px-10 py-5 rounded-md text-white shadow-xl disabled:from-gray-600 disabled:to-gray-600 disabled:text-gray-100 disabled:cursor-not-allowed">
+							<button
+								disabled={
+									expiration?.toString() < Date.now().toString() ||
+									remainingTickets?.toNumber() === 0
+								}
+								className="mt-5 w-full bg-gradient-to-br from-orange-500 to-emerald-600 px-10 py-5 rounded-md text-white shadow-xl disabled:from-gray-600 disabled:to-gray-600 disabled:text-gray-100 disabled:cursor-not-allowed"
+							>
 								Buy tickets
 							</button>
 						</div>
