@@ -6,6 +6,7 @@ import Loading from "@/components/Loading";
 import { useState, Fragment } from "react";
 import { ethers } from "ethers";
 import { currency } from "@/constants";
+import CountdownTimer from "@/components/CountdownTimer";
 
 export default function Home() {
 	const address = useAddress();
@@ -67,10 +68,13 @@ export default function Home() {
 						</div>
 
 						{/* Countdown timer */}
+						<div className="mt-5 mb-3">
+							<CountdownTimer />
+						</div>
 					</div>
 
 					<div className="stats-container">
-						<div className="stats-container">
+						<div className="stats-container w-[400px]">
 							<div className="flex justify-between items-center text-white pb-2">
 								<h2>Price per ticket</h2>
 								<p>
