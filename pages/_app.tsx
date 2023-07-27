@@ -6,7 +6,7 @@ export default function App({ Component, pageProps }: AppProps) {
 	return (
 		<ThirdwebProvider
 			activeChain="mumbai"
-			clientId={process.env.THIRDWEB_CLIENT_ID}
+			clientId={process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID}
 		>
 			<Component {...pageProps} />
 		</ThirdwebProvider>
