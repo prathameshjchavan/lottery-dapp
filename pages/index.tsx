@@ -13,6 +13,7 @@ import { ethers } from "ethers";
 import { currency } from "@/constants";
 import CountdownTimer from "@/components/CountdownTimer";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 export default function Home() {
 	const address = useAddress();
@@ -225,6 +226,27 @@ export default function Home() {
 				{/* The price per ticket box */}
 				<div></div>
 			</main>
+			<footer className="border-t border-emerald-500/20 flex items-center text-white justify-between p-5">
+				<Image
+					src="https://i.imgur.com/4h7mAu7.png"
+					width={800}
+					height={800}
+					alt="profile"
+					className="h-10 w-10 filter hue-rotate-90 opacity-20 rounded-full"
+				/>
+
+				<p className="text-xs text-emerald-900 pl-5">
+					DISCLAIMER: This video is made for informational and educational
+					purposes only. The content of this tutorial is not intended to be a
+					lure to gambling. Instead, the information presented is meant for
+					nothing more than learning and entertainment purposes. We are not
+					liable for any losses that are incurred or problems that arise at
+					online casinos or elsewhere after the reading and consideration of
+					this tutorials content. If you are gambling online utilizing
+					information from this tutorial, you are doing so completely and
+					totally at your own risk.
+				</p>
+			</footer>
 		</div>
 	);
 }
