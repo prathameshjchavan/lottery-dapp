@@ -38,6 +38,15 @@ export default function Home() {
 	const { data: expiration } = useContractRead(contract, "expiration");
 	const { mutateAsync: BuyTickets } = useContractWrite(contract, "BuyTickets");
 	const { data: tickets } = useContractRead(contract, "getTickets");
+	const { data: winnings } = useContractRead(
+		contract,
+		"getWinningsForAddress",
+		[address]
+	);
+	const { mutateAsync: WithdrawWinnings } = useContractWrite(
+		contract,
+		"WithdrawWinnings"
+	);
 
 	const handleClick = async () => {
 		if (!ticketPrice) return;
@@ -69,6 +78,24 @@ export default function Home() {
 		}
 	};
 
+	const onWithdrawWinnings = async () => {
+		const notification = toast.loading("Withdraw winnings...");
+
+		try {
+			const data = await WithdrawWinnings({});
+
+			toast.success("Winnings withdrawn successfully!", {
+				id: notification,
+			});
+		} catch (error) {
+			toast.error("contract call failure", {
+				id: notification,
+			});
+
+			console.error("contract call failure", error);
+		}
+	};
+
 	useEffect(() => {
 		if (!tickets) return;
 
@@ -93,6 +120,22 @@ export default function Home() {
 			</Head>
 			<main>
 				<Header />
+
+				{winnings > 0 && (
+					<div className="max-w-md md:max-w-2xl lg:max-w-4xl mx-auto mt-5">
+						<button
+							onClick={onWithdrawWinnings}
+							className="p-5 bg-gradient-to-b from-orange-500 to-emerald-600 animate-pulse text-center rounded-xl w-full"
+						>
+							<p className="font-bold">Winner Winner Chicken Dinner!</p>
+							<p>
+								Total Winnings: {ethers.utils.formatEther(winnings)} {currency}
+							</p>
+							<br />
+							<p className="font-semibold">Click here to withdraw</p>
+						</button>
+					</div>
+				)}
 
 				{/* The Next Draw Box */}
 				<div className="space-y-5 md:space-y-0 m-5 md:flex md:flex-row items-start justify-center md:space-x-5">
