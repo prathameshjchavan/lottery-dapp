@@ -8,7 +8,7 @@ import {
 } from "@thirdweb-dev/react";
 import Head from "next/head";
 import Loading from "@/components/Loading";
-import { useState, Fragment } from "react";
+import { useState, Fragment, useEffect } from "react";
 import { ethers } from "ethers";
 import { currency } from "@/constants";
 import CountdownTimer from "@/components/CountdownTimer";
@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 export default function Home() {
 	const address = useAddress();
 	const [quantity, setQuantity] = useState<number>(1);
+	const [userTickets, setUserTickets] = useState<number>(0);
 	const { contract, isLoading } = useContract(
 		process.env.NEXT_PUBLIC_LOTTERY_CONTRACT_ADDRESSS
 	);
@@ -35,6 +36,7 @@ export default function Home() {
 	);
 	const { data: expiration } = useContractRead(contract, "expiration");
 	const { mutateAsync: BuyTickets } = useContractWrite(contract, "BuyTickets");
+	const { data: tickets } = useContractRead(contract, "getTickets");
 
 	const handleClick = async () => {
 		if (!ticketPrice) return;
@@ -65,6 +67,19 @@ export default function Home() {
 			console.error("contract call failure", error);
 		}
 	};
+
+	useEffect(() => {
+		if (!tickets) return;
+
+		const totalTickets: string[] = tickets;
+
+		const noOfUserTickets = totalTickets.reduce(
+			(total, ticketAddress) => (ticketAddress === address ? total + 1 : total),
+			0
+		);
+
+		setUserTickets(noOfUserTickets);
+	}, [tickets, address]);
 
 	if (!address) return <Login />;
 
@@ -110,8 +125,8 @@ export default function Home() {
 						</div>
 					</div>
 
-					<div className="stats-container">
-						<div className="stats-container w-[400px]">
+					<div className="stats-container space-y-2">
+						<div className="stats-container min-w-[400px]">
 							<div className="flex justify-between items-center text-white pb-2">
 								<h2>Price per ticket</h2>
 								<p>
@@ -175,11 +190,35 @@ export default function Home() {
 									remainingTickets?.toNumber() === 0
 								}
 								onClick={handleClick}
-								className="mt-5 w-full bg-gradient-to-br from-orange-500 to-emerald-600 px-10 py-5 rounded-md text-white shadow-xl disabled:from-gray-600 disabled:to-gray-600 disabled:text-gray-100 disabled:cursor-not-allowed"
+								className="mt-5 w-full bg-gradient-to-br from-orange-500 to-emerald-600 px-10 py-5 rounded-md text-white shadow-xl disabled:from-gray-600 disabled:to-gray-600 disabled:text-gray-100 disabled:cursor-not-allowed font-semibold"
 							>
-								Buy tickets
+								Buy {quantity} tickets for{" "}
+								{ticketPrice &&
+									Number(ethers.utils.formatEther(ticketPrice)) * quantity}{" "}
+								{currency}
 							</button>
 						</div>
+
+						{userTickets > 0 && (
+							<div className="stats">
+								<p className="text-lg mb-2">
+									You have {userTickets} Tickets in this draw
+								</p>
+
+								<div className="flex max-w-sm flex-wrap gap-x-2 gap-y-2">
+									{Array(userTickets)
+										.fill("")
+										.map((_, index) => (
+											<p
+												key={index}
+												className="text-emerald-300 h-20 w-12 bg-emerald-500/30 rounded-lg flex flex-shrink-0 items-center justify-center text-xs italic"
+											>
+												{index + 1}
+											</p>
+										))}
+								</div>
+							</div>
+						)}
 					</div>
 				</div>
 
