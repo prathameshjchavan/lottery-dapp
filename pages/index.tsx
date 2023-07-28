@@ -1,12 +1,18 @@
 import Header from "@/components/Header";
 import Login from "@/components/Login";
-import { useAddress, useContract, useContractRead } from "@thirdweb-dev/react";
+import {
+	useAddress,
+	useContract,
+	useContractRead,
+	useContractWrite,
+} from "@thirdweb-dev/react";
 import Head from "next/head";
 import Loading from "@/components/Loading";
 import { useState, Fragment } from "react";
 import { ethers } from "ethers";
 import { currency } from "@/constants";
 import CountdownTimer from "@/components/CountdownTimer";
+import toast from "react-hot-toast";
 
 export default function Home() {
 	const address = useAddress();
@@ -28,6 +34,37 @@ export default function Home() {
 		"ticketCommission"
 	);
 	const { data: expiration } = useContractRead(contract, "expiration");
+	const { mutateAsync: BuyTickets } = useContractWrite(contract, "BuyTickets");
+
+	const handleClick = async () => {
+		if (!ticketPrice) return;
+
+		const notification = toast.loading("Buying you tickets...");
+
+		try {
+			const data = await BuyTickets({
+				overrides: {
+					value: ethers.utils.parseEther(
+						(
+							Number(ethers.utils.formatEther(ticketPrice)) * quantity
+						).toString()
+					),
+				},
+			});
+
+			toast.success("Tickets purchased successfully!", {
+				id: notification,
+			});
+
+			console.info("contract call success", data);
+		} catch (error) {
+			toast.error("Whoops something went wrong!", {
+				id: notification,
+			});
+
+			console.error("contract call failure", error);
+		}
+	};
 
 	if (!address) return <Login />;
 
@@ -137,6 +174,7 @@ export default function Home() {
 									expiration?.toString() < Date.now().toString() ||
 									remainingTickets?.toNumber() === 0
 								}
+								onClick={handleClick}
 								className="mt-5 w-full bg-gradient-to-br from-orange-500 to-emerald-600 px-10 py-5 rounded-md text-white shadow-xl disabled:from-gray-600 disabled:to-gray-600 disabled:text-gray-100 disabled:cursor-not-allowed"
 							>
 								Buy tickets
