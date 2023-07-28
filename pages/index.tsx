@@ -14,6 +14,7 @@ import { currency } from "@/constants";
 import CountdownTimer from "@/components/CountdownTimer";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import Marquee from "react-fast-marquee";
 
 export default function Home() {
 	const address = useAddress();
@@ -46,6 +47,11 @@ export default function Home() {
 	const { mutateAsync: WithdrawWinnings } = useContractWrite(
 		contract,
 		"WithdrawWinnings"
+	);
+	const { data: lastWinner } = useContractRead(contract, "lastWinner");
+	const { data: lastWinnerAmount } = useContractRead(
+		contract,
+		"lastWinnerAmount"
 	);
 
 	const handleClick = async () => {
@@ -120,6 +126,24 @@ export default function Home() {
 			</Head>
 			<main>
 				<Header />
+
+				<Marquee className="bg-[#0A1F1C] p-5 mb-5" gradient={false} speed={100}>
+					<div className="flex space-x-2 mx-10">
+						<h4 className="text-white font-bold">
+							Last Winner: {lastWinner?.toString()}
+						</h4>
+						<h4 className="text-white font-bold">
+							Previous winnings:{" "}
+							{lastWinnerAmount ? (
+								<Fragment>
+									{ethers.utils.formatEther(lastWinnerAmount)} {currency}
+								</Fragment>
+							) : (
+								"unknown"
+							)}
+						</h4>
+					</div>
+				</Marquee>
 
 				{winnings > 0 && (
 					<div className="max-w-md md:max-w-2xl lg:max-w-4xl mx-auto mt-5">
