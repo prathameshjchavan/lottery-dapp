@@ -8,13 +8,13 @@ const Login = () => {
 		<div className="bg-[#091B18] min-h-screen flex flex-col items-center justify-center text-center">
 			<div className="flex flex-col items-center mb-10">
 				<Image
-					src="https://i.imgur.com/4h7mAu7.png"
+					src="/images/blockchain.png"
 					width={1500}
 					height={1500}
 					alt="profile"
 					className="h-56 w-56 mb-10 rounded-full"
 				/>
-				<h1 className="text-6xl text-white font-bold">THE PAPAFAM DRAW</h1>
+				<h1 className="text-6xl text-white font-bold">THE LOTTERY DRAW</h1>
 				<h2 className="text-white">
 					Get Started by logging in with your MetaMask
 				</h2>

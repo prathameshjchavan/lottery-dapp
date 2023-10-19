@@ -12,14 +12,14 @@ const Header = () => {
 			{/* Left Side */}
 			<div className="flex items-center space-x-2">
 				<Image
-					src="https://i.imgur.com/4h7mAu7.png"
+					src="/images/blockchain.png"
 					width={800}
 					height={800}
 					alt="profile"
 					className="h-20 w-20 rounded-full"
 				/>
 				<div>
-					<h1 className="text-lg text-white font-bold">PAPAFAM DRAW</h1>
+					<h1 className="text-lg text-white font-bold">LOTTERY DRAW</h1>
 					<p className="text-xs text-emerald-500 truncate">
 						User: {address?.substring(0, 5)}...
 						{address?.substring(address.length, address.length - 5)}
