@@ -135,7 +135,7 @@ const AdminControls = () => {
 					<StarIcon className="h-6 mx-auto mb-2" />
 					Draw Winner
 				</button>
-				<button onClick={onWithdrawCommission} className="admin-button">
+				<button className="admin-button">
 					<CurrencyDollarIcon className="h-6 mx-auto mb-2" />
 					Withdraw Commission
 				</button>
@@ -143,7 +143,7 @@ const AdminControls = () => {
 					<ArrowPathIcon className="h-6 mx-auto mb-2" />
 					Restart Draw
 				</button>
-				<button onClick={onRefundAll} className="admin-button">
+				<button className="admin-button">
 					<ArrowUturnDownIcon className="h-6 mx-auto mb-2" />
 					Refund All
 				</button>
